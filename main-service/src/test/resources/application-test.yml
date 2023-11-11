@@ -1,0 +1,23 @@
+spring:
+  security:
+    filter:
+      order: 10
+    cors:
+      allowedOrigin: '*'
+      allowedMethod: '*'
+      allowedHeader: '*'
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  settings:
+    user-service:
+      uri: http://localhost:8480/users
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+    org.springframework.web: debug
+    com.learning.springjwt: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+

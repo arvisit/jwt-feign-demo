@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  liquibase:
+    change-log: db/changelog/changelog.xml
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  security:
+    filter:
+      order: 10
+    jwt:
+      secret: ${JWT_SECRET}
+#      expiration: 0
+      expiration: 3600000
+    cors:
+      allowedOrigin: ${CORS_ALLOWED_ORIGIN}
+      allowedMethod: ${CORS_ALLOWED_METHOD}
+      allowedHeader: ${CORS_ALLOWED_HEADER}
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+    org.springframework.web: debug
+    com.learning.springjwt: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+

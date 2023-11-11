@@ -1,0 +1,75 @@
+version: '3.1'
+services:
+  main-service:
+    build:
+      context: .
+      dockerfile: ./main-service/Dockerfile
+    image: feign-demo-main-service-1.0.0
+    container_name: feign-demo-main-service
+    environment:
+      CORS_ALLOWED_HEADER: none
+      CORS_ALLOWED_METHOD: none
+      CORS_ALLOWED_ORIGIN: none
+      USER_SERVICE_URI: http://user-service:8080/users
+    ports:
+      - 8080:8080
+    networks:
+      - feign_demo_network
+    depends_on:
+      user-service:
+        condition: service_healthy
+
+  user-service:
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    image: feign-demo-user-service-1.0.0
+    container_name: feign-demo-user-service
+    environment:
+      DB_URL: jdbc:postgresql://users-db:5432/feign-users-db
+      DB_USERNAME: postgres
+      DB_PASSWORD: root
+      JWT_SECRET: cofZUlayEW6vaGKwVDt5uNzr4vNWUg1F1BiPQe_EShfo4fT6oea1JzkYTpqT27pC
+      CORS_ALLOWED_HEADER: none
+      CORS_ALLOWED_METHOD: none
+      CORS_ALLOWED_ORIGIN: none
+    healthcheck:
+      test: wget -qO- http://localhost:8080/actuator/health || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+    ports:
+      - 8480:8080
+    networks:
+      - feign_demo_network
+    depends_on:
+      users-db:
+        condition: service_healthy
+
+  users-db:
+    image: postgres:15-alpine
+    container_name: feign-users-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: feign-users-db
+    healthcheck:
+      test: pg_isready -U postgres -d feign-users-db
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    networks:
+      - feign_demo_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+networks:
+  feign_demo_network:

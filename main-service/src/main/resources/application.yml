@@ -1,0 +1,23 @@
+spring:
+  security:
+    filter:
+      order: 10
+    cors:
+      allowedOrigin: ${CORS_ALLOWED_ORIGIN}
+      allowedMethod: ${CORS_ALLOWED_METHOD}
+      allowedHeader: ${CORS_ALLOWED_HEADER}
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  settings:
+    user-service:
+      uri: ${USER_SERVICE_URI}
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+    org.springframework.web: debug
+    com.learning.springjwt: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+

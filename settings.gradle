@@ -1,0 +1,3 @@
+rootProject.name = 'spring-jwt-feign'
+include 'main-service'
+include 'user-service'
