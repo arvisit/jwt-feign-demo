@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -22,9 +23,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WireMockTest(httpPort = 8480)
 class HelloRestControllerTest {
 
     private static final String USERS_VALIDATE_URL = "/users/validate";
@@ -39,20 +42,6 @@ class HelloRestControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    private WireMockServer wireMockServer;
-
-    @BeforeEach
-    public void setup() {
-        wireMockServer = new WireMockServer(8480);
-        wireMockServer.start();
-        WireMock.configureFor("localhost", 8480);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        wireMockServer.stop();
-    }
 
     @Test
     void shouldReturn200_whenRequestToAdministratorAuthorityEndpointWithValidAuthorities() throws Exception {
@@ -125,7 +114,9 @@ class HelloRestControllerTest {
     private void wireMockResponse(UserDto user) throws JsonProcessingException {
         String body = objectMapper.writeValueAsString(user);
         WireMock.stubFor(WireMock.get(WireMock.urlEqualTo(USERS_VALIDATE_URL))
-                .willReturn(WireMock.aResponse().withHeader("Content-Type", "application/json").withBody(body)));
+                .willReturn(WireMock.aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(body)));
     }
 
 }
